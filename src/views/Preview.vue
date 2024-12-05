@@ -4,12 +4,12 @@
   <div v-if="isGameOver" class="modal">
     <div class="modal__content">
       <div class="modal__content-title">Победа!</div>
-      <div class="modal__content-subtitle">{{ winners.length > 1 ? 'Выигрышные билеты:' : 'Выигрышный билет:' }}</div>
-      <div class="modal__content-numbers">
-        <span v-for="(winner, idx) of winners" :key="idx">
-          <span v-if="idx > 0">, </span>
-          {{winner}}
-        </span>
+      <div class="modal__winners-table">
+        <div class="modal__winners-table-title">{{ winners.length > 1 ? 'Выигрышные билеты:' : 'Выигрышный билет:' }}</div>
+        <div class="modal__winners-table-row" v-for="(winner, idx) of winners" :key="idx">
+          <div class="modal__winners-table-number">№ {{winner.number}}</div>
+          <div class="modal__winners-table-name">{{ winner.name }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -131,8 +131,6 @@ export default {
         let sprite_leg;
         let sprite_beam;
         let sprite_barrel;
-        let background_top;
-        let background_bottom;
         let background;
         let font;
 
@@ -150,7 +148,10 @@ export default {
         const beamVertices = Svg.pathToVertices(beamPath)
 
         function moveObjectsRight(callback) {
-          const startTime = Date.now();
+          const firstBoard = boards[0]
+          const step = firstBoard.width
+          const startPositionX = firstBoard.body.position.x
+          const endPositionX = firstBoard.body.position.x + step
 
           if (boardIndex > 1) {
             Composite.remove(world, [boards[boards.length - 1].body, barrels[barrels.length - 1].body])
@@ -158,7 +159,7 @@ export default {
             barrels.pop()
           }
 
-          if (beams[beams.length - 1].body.bounds.min.x > document.querySelector('#container-custom').offsetWidth) {
+          if (beams[beams.length - 1].body.bounds.min.x > p.width) {
             Composite.remove(world, [beams[beams.length - 1].body])
             beams.pop()
 
@@ -171,7 +172,7 @@ export default {
             beams.unshift(beam)
           }
 
-          if (legs[legs.length - 1].body.bounds.min.x > document.querySelector('#container-custom').offsetWidth) {
+          if (legs[legs.length - 1].body.bounds.min.x > p.width) {
             Composite.remove(world, [legs[legs.length - 1].body])
             legs.pop()
 
@@ -194,23 +195,29 @@ export default {
           boardIndex++
 
           function animate() {
-              const currentTime = Date.now();
-              const elapsed = currentTime - startTime;
-              const t = Math.min(elapsed / 1000, 1);
-              const easedT = easeInOutSin(t);
+            const currentPositionX = firstBoard.body.position.x
+            const progress = (currentPositionX - startPositionX) / step
 
-              // const deltaX = 4.21 * scaleFactor * easedT;
-              const deltaX = 4.21 * scaleFactor * easedT;
+            let deltaX
+            if (progress < 0.00001 || progress > 0.99999) deltaX = step / 8192
+            else if (progress < 0.00002 || progress > 0.99998) deltaX = step / 1024
+            else if (progress < 0.1 || progress > 0.9) deltaX = step / 256
+            else if (progress < 0.2 || progress > 0.8) deltaX = step / 128
+            else if (progress < 0.3 || progress > 0.7) deltaX = step / 64
+            else deltaX = step / 16
+            
+            world.bodies.forEach(body => {
+              if (body !== hill.body) Body.translate(body, { x: deltaX, y: 0 });
+            });
 
-              for (let body of engine.world.bodies) {
-                if (body !== hill.body) Body.translate(body, { x: deltaX, y: 0 });
-              }
-
-              if (t < 1) {
-                requestAnimationFrame(animate);
-              } else {
-                callback()
-              }
+            if (currentPositionX < endPositionX) {
+              console.log(currentPositionX, endPositionX)
+              requestAnimationFrame(animate);
+            } else {
+              callback()
+              console.log('end', currentPositionX, endPositionX)
+              console.log(boards)
+            }
           }
 
           requestAnimationFrame(animate);
@@ -222,11 +229,19 @@ export default {
             this.number = number
             this.img = img
             this.radius = 60 * scaleFactor
+            
+            if (barrelIndex === 0) this.angle = p.PI / 2
+            else if (barrelIndex === 1) this.angle = p.PI
+            else if (barrelIndex === 2) this.angle = -p.PI / 2
+            else if (barrelIndex === 3) this.angle = p.PI / 4
+            else this.angle = p.PI
+
             this.body = Bodies.circle(
               this.position.x, this.position.y, this.radius, {
                 restitution: 0.5,
                 frictionAir: 0,
-                mass: 100
+                mass: 100,
+                angle: this.angle
               }
             )
             this.width = this.body.bounds.max.x - this.body.bounds.min.x
@@ -242,10 +257,23 @@ export default {
             p.translate(this.body.position.x, this.body.position.y)
             p.rotate(this.body.angle);
             p.image(this.img, 0, 0, this.width, this.height);
+            p.push()
+            p.drawingContext.shadowOffsetX = this.radius / 30;
+            p.drawingContext.shadowOffsetY = this.radius / 30;
+            p.drawingContext.shadowBlur = 0;
+            p.drawingContext.shadowColor = 'rgba(0, 0, 0, 0.5)';
             p.textFont(font);
             p.textSize(48 * scaleFactor);
             p.textAlign(p.CENTER, p.CENTER);
             p.text(this.number, 0, -10 * scaleFactor);
+            p.pop()
+            if ([6, 9, 68, 89].includes(this.number)) {
+              p.push()
+              p.fill(0)
+              p.noStroke()
+              p.ellipse(0, this.radius / 2, this.radius / 7)
+              p.pop()
+            }
             p.strokeWeight(2);
             p.stroke(0);
             p.noFill();
@@ -256,14 +284,14 @@ export default {
 
         class MiddleBoard {
           constructor() {
-            this.position = {x: document.querySelector('#container-custom').offsetWidth / 2, y: document.querySelector('#container-custom').offsetHeight / 2}
+            this.position = {x: p.width / 2, y: p.height / 2}
             this.img = sprite_middle_board
             this.body = Bodies.fromVertices(
               this.position.x, this.position.y, middleBoardVertices, { isStatic: true }
             )
             this.width = this.body.bounds.max.x - this.body.bounds.min.x
             this.height = this.body.bounds.max.y - this.body.bounds.min.y
-            scaleFactor = document.querySelector('#container-custom').offsetWidth / COUNT_OF_BOARDS_PER_SCREEN / this.width
+            scaleFactor = p.width / COUNT_OF_BOARDS_PER_SCREEN / this.width
             Body.scale(this.body, scaleFactor, scaleFactor);
             this.width = this.body.bounds.max.x - this.body.bounds.min.x
             this.height = this.body.bounds.max.y - this.body.bounds.min.y
@@ -286,7 +314,7 @@ export default {
 
         class EndBoard {
           constructor() {
-            this.position = {x: document.querySelector('#container-custom').offsetWidth / 2, y: document.querySelector('#container-custom').offsetHeight / 2}
+            this.position = {x: p.width / 2, y: p.height / 2}
             this.img = sprite_end_board
             this.body = Bodies.fromVertices(
               this.position.x, this.position.y, endBoardVertices, { isStatic: true }
@@ -313,7 +341,7 @@ export default {
 
         class Leg {
           constructor() {
-            this.position = {x: document.querySelector('#container-custom').offsetWidth / 2, y: document.querySelector('#container-custom').offsetHeight / 2}
+            this.position = {x: p.width / 2, y: p.height / 2}
             this.img = sprite_leg
             this.body = Bodies.fromVertices(
               this.position.x, this.position.y, legVertices, { isStatic: true }
@@ -340,7 +368,7 @@ export default {
 
         class Beam {
           constructor() {
-            this.position = {x: document.querySelector('#container-custom').offsetWidth / 2, y: document.querySelector('#container-custom').offsetHeight / 2}
+            this.position = {x: p.width / 2, y: p.height / 2}
             this.img = sprite_beam
             this.body = Bodies.fromVertices(
               this.position.x, this.position.y, beamVertices, { isStatic: true }
@@ -384,8 +412,6 @@ export default {
           sprite_leg = p.loadImage("../sprite_leg.png")
           sprite_beam = p.loadImage("../sprite_beam.png")
           sprite_barrel = p.loadImage("../sprite_barrel.png")
-          background_top = p.loadImage("../background_top.png")
-          background_bottom = p.loadImage("../background_bottom.png")
           background = p.loadImage("../background.png")
           font = p.loadFont('../Afacad-Bold.ttf');
         }
@@ -413,7 +439,7 @@ export default {
             new Beam(),
             new Beam()
           )
-          
+
           for (let b = 0; b < boards.length - 1; b++) {
             const currentPosition = boards[b].body.position
             const width = boards[b].width
@@ -471,15 +497,13 @@ export default {
             }
           });
 
-          
+          console.log(boards)
         };
 
         p.draw = () => {
           p.push()
           p.imageMode(p.CORNER)
           p.image(background, 0, p.height - p.width / background.width * background.height, p.width, p.width / background.width * background.height);
-          // p.image(background_bottom, 0, p.height - p.width / background_bottom.width * background_bottom.height, p.width, p.width / background_bottom.width * background_bottom.height);
-          // p.image(background_top, 0, 0, p.width, p.width / background_top.width * background_top.height);
           p.pop()
           if (!this.debug) Engine.update(engine)
           for (let board of boards) {
@@ -494,9 +518,10 @@ export default {
           for (let barrel of barrels) {
             barrel.render()
           }
+          p.strokeWeight(3)
+          // p.line(p.width / 2, 0, p.width / 2, p.height)
         };
 
-       
       };
 
       new p5(sketch);
@@ -516,7 +541,7 @@ export default {
   z-index: 9999;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -528,40 +553,61 @@ export default {
     align-items: center;
     justify-content: center;
     font-family: sans-serif;
-    width: 70vw;
-    height: 50vw;
-    border-radius: 2vw;
+    // width: 70vw;
+    // height: 50vw;
+    width: 100%;
+    height: 100%;
+    // border-radius: 2vw;
+    // background-color: rgba(255, 255, 255, 1);
+    background-image: url('../public/background_modal.png');
+    background-size: cover;
+    background-position: center, center;
   }
 
   &__content-title {
     font-size: 10vw;
     font-weight: bold;
     color: #BC1519;
-    text-shadow: 
-    0.3vw 0.3vw 2px #FFF,
-    -0.3vw 0.3vw 2px #FFF,
-    -0.3vw -0.3vw 0 #FFF,
-    0.3vw -0.3vw 0 #FFF;
+    margin-bottom: 4vw;
   }
 
-  &__content-subtitle {
+  &__winners-table {
+    background-color: #FFF;
+    display: flex;
+    flex-direction: column;
+    gap: 2vw;
+    border-radius: 1vw;
+    overflow: hidden;
+  }
+
+  &__winners-table-title {
+    font-size: 5vw;
+    margin-bottom: 1vw;
+    text-align: center;
+    background-color: #F4F06E;
+    padding: 2vw;
+  }
+
+  &__winners-table-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 6vw;
-    text-shadow: 
-    0.1vw 0.1vw 2px #FFF,
-    -0.1vw 0.1vw 2px #FFF,
-    -0.1vw -0.1vw 0 #FFF,
-    0.1vw -0.1vw 0 #FFF;
+    gap: 4vw;
+    padding: 0 2vw;
+
+    &:last-child{
+      margin-bottom: 2vw;
+    }
   }
 
-  &__content-numbers {
-    font-size: 15vw;
+  &__winners-table-number {
     font-weight: bold;
     color: #BC1519;
-    text-shadow: 
-    0.3vw 0.3vw 2px #FFF,
-    -0.3vw 0.3vw 2px #FFF,
-    -0.3vw -0.3vw 0 #FFF,
-    0.3vw -0.3vw 0 #FFF;
+  }
+
+  &__winners-table-name {
+    
   }
 }
 </style>
