@@ -6,9 +6,11 @@
       <div class="modal__content-title">Победа!</div>
       <div class="modal__winners-table">
         <div class="modal__winners-table-title">{{ winners.length > 1 ? 'Выигрышные билеты:' : 'Выигрышный билет:' }}</div>
-        <div class="modal__winners-table-row" v-for="(winner, idx) of winners" :key="idx">
-          <div class="modal__winners-table-number">№ {{winner.number}}</div>
-          <div class="modal__winners-table-name">{{ winner.name }}</div>
+        <div class="modal__winners-table-row-wrapper">
+          <div class="modal__winners-table-row" v-for="(winner, idx) of winners" :key="idx">
+            <div class="modal__winners-table-number">№ {{winner.number}}</div>
+            <div class="modal__winners-table-name">{{ winner.name }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -204,7 +206,7 @@ export default {
             else if (progress < 0.1 || progress > 0.9) deltaX = step / 256
             else if (progress < 0.2 || progress > 0.8) deltaX = step / 128
             else if (progress < 0.3 || progress > 0.7) deltaX = step / 64
-            else deltaX = step / 16
+            else deltaX = step / 32
             
             world.bodies.forEach(body => {
               if (body !== hill.body) Body.translate(body, { x: deltaX, y: 0 });
@@ -575,6 +577,7 @@ export default {
     gap: 2vw;
     border-radius: 1vw;
     overflow: hidden;
+    max-height: 50vw;
   }
 
   &__winners-table-title {
@@ -585,6 +588,13 @@ export default {
     padding: 2vw;
   }
 
+  &__winners-table-row-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2vw;
+    overflow-y: auto;
+  }
+
   &__winners-table-row {
     display: flex;
     align-items: center;
@@ -592,10 +602,6 @@ export default {
     font-size: 6vw;
     gap: 4vw;
     padding: 0 2vw;
-
-    &:last-child{
-      margin-bottom: 2vw;
-    }
   }
 
   &__winners-table-number {
