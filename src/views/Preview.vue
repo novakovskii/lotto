@@ -265,7 +265,6 @@ export default {
             p.textSize(48 * scaleFactor);
             p.textAlign(p.CENTER, p.CENTER);
             p.text(this.number, 0, -10 * scaleFactor);
-            p.pop()
             if ([6, 9, 68, 89].includes(this.number)) {
               p.push()
               p.fill(0)
@@ -273,6 +272,7 @@ export default {
               p.ellipse(0, this.radius / 2, this.radius / 7)
               p.pop()
             }
+            p.pop()
             p.strokeWeight(2);
             p.stroke(0);
             p.noFill();
@@ -593,6 +593,7 @@ export default {
     flex-direction: column;
     gap: 2vw;
     overflow-y: auto;
+    padding-bottom: 2vw
   }
 
   &__winners-table-row {

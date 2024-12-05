@@ -8000,8 +8000,10 @@ export default {
   .table {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(10, 1fr);
     background-color: #F5E4C1;
+    grid-auto-flow: column;
   }
 
   .cell {
