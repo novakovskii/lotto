@@ -211,12 +211,9 @@ export default {
             });
 
             if (currentPositionX < endPositionX) {
-              console.log(currentPositionX, endPositionX)
               requestAnimationFrame(animate);
             } else {
               callback()
-              console.log('end', currentPositionX, endPositionX)
-              console.log(boards)
             }
           }
 
@@ -292,7 +289,6 @@ export default {
             this.width = this.body.bounds.max.x - this.body.bounds.min.x
             this.height = this.body.bounds.max.y - this.body.bounds.min.y
             scaleFactor = p.width / COUNT_OF_BOARDS_PER_SCREEN / this.width
-            console.log(scaleFactor)
             Body.scale(this.body, scaleFactor, scaleFactor);
             this.width = this.body.bounds.max.x - this.body.bounds.min.x
             this.height = this.body.bounds.max.y - this.body.bounds.min.y
@@ -498,7 +494,6 @@ export default {
             }
           });
 
-          console.log(boards)
         };
 
         p.draw = () => {
