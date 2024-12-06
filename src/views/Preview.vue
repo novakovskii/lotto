@@ -8,8 +8,8 @@
         <div class="modal__winners-table-title">{{ winners.length > 1 ? 'Выигрышные билеты:' : 'Выигрышный билет:' }}</div>
         <div class="modal__winners-table-row-wrapper">
           <div class="modal__winners-table-row" v-for="(winner, idx) of winners" :key="idx">
-            <div class="modal__winners-table-number">№ {{winner.number}}</div>
-            <div class="modal__winners-table-name">{{ winner.name }}</div>
+            <div class="modal__winners-table-number" :style="{'text-align': enableNames ? 'left' : 'center'}">№ {{winner.number}}</div>
+            <div v-if="enableNames" class="modal__winners-table-name">{{ winner.name }}</div>
           </div>
         </div>
       </div>
@@ -70,7 +70,8 @@ export default {
     return {
       debug: false,
       isGameOver: false,
-      winners: []
+      winners: [],
+      enableNames: false
     }
   },
   mounted () {
@@ -608,6 +609,7 @@ export default {
   &__winners-table-number {
     font-weight: bold;
     color: #BC1519;
+    flex: 1;
   }
 
   &__winners-table-name {
