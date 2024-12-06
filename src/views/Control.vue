@@ -7996,7 +7996,7 @@ export default {
       if (winners.length > 0) {
         console.log('%cПобедители:', 'color: #00FF00; font-size: 32px')
         for (let winner of winners) {
-            console.log(`%c№ ${winner.number} - ${winner.name}`, 'font-size: 32px')
+            console.log(`%c№ ${String(winner.number).padStart(3, "0")} - ${winner.name}`, 'font-size: 32px')
         }
         channel.postMessage({type: 'gameOver', value: winners});
       }

@@ -8,7 +8,7 @@
         <div class="modal__winners-table-title">{{ winners.length > 1 ? 'Выигрышные билеты:' : 'Выигрышный билет:' }}</div>
         <div class="modal__winners-table-row-wrapper">
           <div class="modal__winners-table-row" v-for="(winner, idx) of winners" :key="idx">
-            <div class="modal__winners-table-number" :style="{'text-align': enableNames ? 'left' : 'center'}">№ {{winner.number}}</div>
+            <div class="modal__winners-table-number" :style="{'text-align': enableNames ? 'left' : 'center'}">№ {{String(winner.number).padStart(3, "0")}}</div>
             <div v-if="enableNames" class="modal__winners-table-name">{{ winner.name }}</div>
           </div>
         </div>
