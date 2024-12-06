@@ -1,4 +1,9 @@
 <template>
+    <div class="checkbox">
+        <input type="checkbox" id="checkbox" v-model="disableBarrelsLaunch">
+        <label for="checkbox">Отключить выкатывание бочонков</label>
+    </div>
+    <button class="restart" @click="onRestart">Перезапустить</button>
   <div class="table">
     <div 
       v-for="(cell, idx) in cells"
@@ -17,12 +22,7 @@ export default {
   name: 'Control',
   data () {
     return {
-      cells: [...Array(90).keys().map(key => {
-        return {
-          value: key + 1,
-          active: false
-        }
-      })],
+      cells: [],
       tickets: [
         [
             [
@@ -7957,7 +7957,8 @@ export default {
         'Васильева Полина',
         'Васильева Полина'
       ],
-      tempTickets: []
+      tempTickets: [],
+      disableBarrelsLaunch: false
     }
   },
   computed: {
@@ -7966,15 +7967,34 @@ export default {
     }
   },
   mounted () {
-    this.tempTickets = this.rawTickets
+    if (localStorage.getItem('tempTickets')) {
+        this.tempTickets = JSON.parse(localStorage.getItem('tempTickets'))
+    } else {
+        this.tempTickets = this.rawTickets
+    }
+
+    if (localStorage.getItem('cells')) {
+        this.cells = JSON.parse(localStorage.getItem('cells'))
+    } else {
+        this.cells = [...Array(90).keys().map(key => {
+        return {
+          value: key + 1,
+          active: false
+        }
+      })]
+    }
+
+    
   },
   methods: {
     onCellClick(idx) {
       this.cells[idx].active = true
+      localStorage.setItem('cells', JSON.stringify(this.cells))
       const currentNumber = this.cells[idx].value
-      channel.postMessage({type: 'setNumber', value: currentNumber});
+      if (!this.disableBarrelsLaunch) channel.postMessage({type: 'setNumber', value: currentNumber});
 
       this.tempTickets = this.tempTickets.map(ticket => ticket.map(field => field.filter(cell => cell !== currentNumber)))
+      localStorage.setItem('tempTickets', JSON.stringify(this.tempTickets))
       let winners = []
 
       for (let t = 0; t < this.tempTickets.length; t++) {
@@ -7989,8 +8009,20 @@ export default {
       }
 
       if (winners.length > 0) {
+        console.log('Победители:', winners)
         channel.postMessage({type: 'gameOver', value: winners});
       }
+    },
+    onRestart() {
+        localStorage.removeItem('tempTickets')
+        localStorage.removeItem('cells')
+        this.cells = [...Array(90).keys().map(key => {
+            return {
+            value: key + 1,
+            active: false
+            }
+        })]
+        this.tickets = this.rawTickets
     }
   }
 }
@@ -8000,10 +8032,8 @@ export default {
   .table {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(9, 1fr);
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-columns: repeat(10, 1fr);
     background-color: #F5E4C1;
-    grid-auto-flow: column;
   }
 
   .cell {
@@ -8023,5 +8053,17 @@ export default {
       pointer-events: none;
       background-color: #5fda6a;
     }
+  }
+
+  .checkbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .restart {
+    position: absolute;
+    bottom: 0;
+    left: 0;
   }
 </style>
