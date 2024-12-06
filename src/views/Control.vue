@@ -3,7 +3,6 @@
         <input type="checkbox" id="checkbox" v-model="disableBarrelsLaunch">
         <label for="checkbox">Отключить выкатывание бочонков</label>
     </div>
-    <button class="restart" @click="onRestart">Перезапустить</button>
   <div class="table">
     <div 
       v-for="(cell, idx) in cells"
@@ -22,7 +21,12 @@ export default {
   name: 'Control',
   data () {
     return {
-      cells: [],
+      cells: [...Array(90).keys().map(key => {
+        return {
+          value: key + 1,
+          active: false
+        }
+      })],
       tickets: [
         [
             [
@@ -7826,136 +7830,136 @@ export default {
         ]
     ],
       names: [
-        'Новаковский Сергей',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина',
-        'Васильева Полина'
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed',
+        'Unnamed'
       ],
       tempTickets: [],
       disableBarrelsLaunch: false
@@ -7967,34 +7971,15 @@ export default {
     }
   },
   mounted () {
-    if (localStorage.getItem('tempTickets')) {
-        this.tempTickets = JSON.parse(localStorage.getItem('tempTickets'))
-    } else {
-        this.tempTickets = this.rawTickets
-    }
-
-    if (localStorage.getItem('cells')) {
-        this.cells = JSON.parse(localStorage.getItem('cells'))
-    } else {
-        this.cells = [...Array(90).keys().map(key => {
-        return {
-          value: key + 1,
-          active: false
-        }
-      })]
-    }
-
-    
+    this.tempTickets = this.rawTickets
   },
   methods: {
     onCellClick(idx) {
       this.cells[idx].active = true
-      localStorage.setItem('cells', JSON.stringify(this.cells))
       const currentNumber = this.cells[idx].value
       if (!this.disableBarrelsLaunch) channel.postMessage({type: 'setNumber', value: currentNumber});
 
       this.tempTickets = this.tempTickets.map(ticket => ticket.map(field => field.filter(cell => cell !== currentNumber)))
-      localStorage.setItem('tempTickets', JSON.stringify(this.tempTickets))
       let winners = []
 
       for (let t = 0; t < this.tempTickets.length; t++) {
@@ -8009,20 +7994,12 @@ export default {
       }
 
       if (winners.length > 0) {
-        console.log('Победители:', winners)
+        console.log('%cПобедители:', 'color: #00FF00; font-size: 32px')
+        for (let winner of winners) {
+            console.log(`%c№ ${winner.number} - ${winner.name}`, 'font-size: 32px')
+        }
         channel.postMessage({type: 'gameOver', value: winners});
       }
-    },
-    onRestart() {
-        localStorage.removeItem('tempTickets')
-        localStorage.removeItem('cells')
-        this.cells = [...Array(90).keys().map(key => {
-            return {
-            value: key + 1,
-            active: false
-            }
-        })]
-        this.tickets = this.rawTickets
     }
   }
 }
@@ -8058,12 +8035,6 @@ export default {
   .checkbox {
     position: absolute;
     top: 0;
-    left: 0;
-  }
-
-  .restart {
-    position: absolute;
-    bottom: 0;
     left: 0;
   }
 </style>
